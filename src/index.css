@@ -1,0 +1,36 @@
+*{
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}
+
+html, body{
+    height: 100%;
+}
+
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, .8) 20%,
+        rgba(100, 100, 100, 1) 100%
+    );
+    color: aliceblue;
+}
+
+button{
+    background: #1645a0;
+    border: 2px solid #fff;
+    border-radius: 25px;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.2em;
+    height: 50px;
+    padding: 0 45px;
+    text-transform: uppercase;
+    transition: .4s;
+}
+button:hover{
+    background: #0f3381;
+}
