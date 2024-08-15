@@ -1,6 +1,6 @@
 import "./App.css";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Game from "./components/Game";
 import GameOver from "./components/GameOver";
@@ -13,6 +13,8 @@ const stages = [
   { id: 3, name: "end" },
 ];
 
+const guessesQtn = 3;
+
 function App() {
   const [gameStage, setGameStage] = useState(stages[0].name);
   const [words] = useState(wordsList);
@@ -23,7 +25,7 @@ function App() {
 
   const [guessedLetters, setGuessedLetters] = useState([]);
   const [wrongLetters, setWrongLetters] = useState([]);
-  const [guesses, setGuesses] = useState(3);
+  const [guesses, setGuesses] = useState(guessesQtn);
   const [score, setScore] = useState(0);
 
   const pickWordAndCategory = () => {
@@ -42,14 +44,54 @@ function App() {
     setPickedCategory(category);
     setLetters(wordLetters);
 
+    console.log(wordLetters);
+
     setGameStage(stages[1].name);
   };
 
   const verifyLetter = (letter) => {
-    console.log(letter);
+    const normalizedLetter = letter.toLowerCase();
+
+    if (
+      guessedLetters.includes(normalizedLetter) ||
+      wrongLetters.includes(normalizedLetter)
+    ) {
+      return;
+    }
+
+    if (letters.includes(normalizedLetter)) {
+      setGuessedLetters((actualGuessedLetters) => [
+        ...actualGuessedLetters,
+        normalizedLetter,
+      ]);
+    } else {
+      setWrongLetters((actualWrongLetters) => [
+        ...actualWrongLetters,
+        normalizedLetter,
+      ]);
+      setGuesses((actualGuesses) => actualGuesses - 1);
+    }
+  };
+
+  const clearLetterState = () => {
+    setGuessedLetters([]);
+    setWrongLetters([]);
   }
 
+  // useEffect irá monitorar a variável guesses
+  // e quando ela for menor ou igual a 0, irá chamar a função setGameStage
+  useEffect(() => {
+    if(guesses <= 0){
+      clearLetterState();
+
+      setGameStage(stages[2].name);
+    }
+  }, [guesses])
+
   const retry = () => {
+    setScore(0);
+    setGuesses(guessesQtn);
+
     setGameStage(stages[0].name);
   };
 
