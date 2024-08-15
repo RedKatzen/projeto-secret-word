@@ -3,7 +3,6 @@ import "./index.css";
 
 const Game = ({
   verifyLetter,
-  pickedWord,
   pickedCategory,
   letters,
   guessedLetters,

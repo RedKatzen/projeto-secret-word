@@ -1,6 +1,6 @@
 import "./App.css";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import Game from "./components/Game";
 import GameOver from "./components/GameOver";
@@ -28,17 +28,26 @@ function App() {
   const [guesses, setGuesses] = useState(guessesQtn);
   const [score, setScore] = useState(0);
 
-  const pickWordAndCategory = () => {
+  const pickWordAndCategory = useCallback(() => {
     const categories = Object.keys(words);
     const category =
       categories[Math.floor(Math.random() * Object.keys(categories).length)];
     const word =
       words[category][Math.floor(Math.random() * words[category].length)];
     return { word, category };
-  };
-  const startGame = () => {
+  }, [words]);
+
+  console.log(pickedWord);
+
+  const startGame = useCallback(() => {
+    clearLetterState();
+
     const { word, category } = pickWordAndCategory();
+    console.log(category, word);
+
     let wordLetters = word.split("");
+
+    wordLetters = wordLetters.map((letter) => letter.toLowerCase());
 
     setPickedWord(word);
     setPickedCategory(category);
@@ -47,7 +56,7 @@ function App() {
     console.log(wordLetters);
 
     setGameStage(stages[1].name);
-  };
+  }, [pickWordAndCategory]);
 
   const verifyLetter = (letter) => {
     const normalizedLetter = letter.toLowerCase();
@@ -88,6 +97,16 @@ function App() {
     }
   }, [guesses])
 
+  useEffect(() => {
+    const uniqueLetters = [... new Set(letters)];
+
+    if(guessedLetters.length === uniqueLetters.length){
+      setScore((actualScore) => (actualScore += 100));
+
+      startGame();
+    }
+  }, [guessedLetters, startGame, letters])
+
   const retry = () => {
     setScore(0);
     setGuesses(guessesQtn);
@@ -101,7 +120,6 @@ function App() {
       {gameStage === "game" && (
         <Game
           verifyLetter={verifyLetter}
-          pickedWord={pickedWord}
           pickedCategory={pickedCategory}
           letters={letters}
           guessedLetters={guessedLetters}
@@ -110,7 +128,7 @@ function App() {
           score={score}
         />
       )}
-      {gameStage === "end" && <GameOver retry={retry} />}
+      {gameStage === "end" && <GameOver retry={retry} score={score} />}
     </div>
   );
 }
